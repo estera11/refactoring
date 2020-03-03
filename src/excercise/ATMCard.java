@@ -1,3 +1,5 @@
+package excercise;
+
 public class ATMCard {
  
 	int pin;

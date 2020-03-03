@@ -1,4 +1,6 @@
-import java.util.ArrayList; 
+package excercise;
+
+import java.util.ArrayList;
 
 public class Customer {
 

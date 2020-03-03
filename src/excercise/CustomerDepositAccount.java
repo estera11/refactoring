@@ -1,3 +1,5 @@
+package excercise;
+
 import java.util.ArrayList;
 
 public class CustomerDepositAccount extends CustomerAccount

@@ -1,3 +1,5 @@
+package excercise;
+
 public class AccountTransaction {
 
 	String date;
