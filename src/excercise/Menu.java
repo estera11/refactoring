@@ -44,6 +44,10 @@ public class Menu extends JFrame {
         ca.add(new CustomerCurrentAccount(new ATMCard(1234, true), "C1234", 1000.0, new ArrayList<AccountTransaction>()));
         driver.customerList.add(new Customer("1234", "Joe", "Bloggs", "11061998", "ID1234", "1234", ca));
 
+        ArrayList<CustomerAccount> ca2 = new ArrayList<>(Arrays.asList(new CustomerDepositAccount(1.7, "D1235", 2000.0, new ArrayList<AccountTransaction>())));
+        ca.add(new CustomerCurrentAccount(new ATMCard(1235, true), "C1235", 1000.0, new ArrayList<AccountTransaction>()));
+        driver.customerList.add(new Customer("1235", "Mark", "Bloggs", "11061998", "ID1236", "1234", ca));
+
         driver.menuStart();
 
     }
@@ -319,6 +323,7 @@ public class Menu extends JFrame {
         });
         selectUserTypeFrame.setVisible(true);
 
+        // TODO do the same with creating panels and adding panels
         JPanel deleteCustomerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton deleteCustomer = new JButton("Delete Customer");
         deleteCustomer.setPreferredSize(new Dimension(250, 20));
@@ -764,7 +769,6 @@ public class Menu extends JFrame {
                     cancelButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
                             selectUserTypeFrame.dispose();
-
                             admin();
                         }
                     });
@@ -1175,6 +1179,7 @@ public class Menu extends JFrame {
             }
         });
         selectUserTypeFrame.setVisible(true);
+        Menu context = this;
 
         if (e.getAccounts().size() == 0) {
             JOptionPane.showMessageDialog(selectUserTypeFrame, "This customer does not have any accounts yet. \n An admin must create an account for this customer \n for them to be able to use customer functionality. ", "Oops!", JOptionPane.INFORMATION_MESSAGE);
@@ -1235,11 +1240,14 @@ public class Menu extends JFrame {
                     });
                     selectUserTypeFrame.setVisible(true);
 
-                    JPanel statementPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                    JButton statementButton = new JButton("Display Bank Statement");
-                    statementButton.setPreferredSize(new Dimension(250, 20));
+//                    JPanel statementPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+//                    JButton statementButton = new JButton("Display Bank Statement");
+//                    statementButton.setPreferredSize(new Dimension(250, 20));
+//                    statementPanel.add(statementButton);
 
-                    statementPanel.add(statementButton);
+                    List<JPanel> panels = new ArrayList<>();
+
+                    panels.add(createPanel("Display Bank Statement",new StatementListener(context),new Dimension(250, 20), FlowLayout.LEFT));
 
                     JPanel lodgementPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
                     JButton lodgementButton = new JButton("Lodge money into account");
@@ -1255,70 +1263,13 @@ public class Menu extends JFrame {
                     JButton returnButton = new JButton("Exit Customer Menu");
                     returnPanel.add(returnButton);
 
-                    JLabel label1 = new JLabel("Please select an option");
-
-                    content = selectUserTypeFrame.getContentPane();
-                    content.setLayout(new GridLayout(5, 1));
-                    content.add(label1);
-                    content.add(statementPanel);
+                   // TODO continue changing here
                     content.add(lodgementPanel);
                     content.add(withdrawalPanel);
                     content.add(returnPanel);
 
-                    statementButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae) {
-                            selectUserTypeFrame.dispose();
-                            selectUserTypeFrame = new JFrame("Customer Menu");
-                            selectUserTypeFrame.setSize(400, 600);
-                            selectUserTypeFrame.setLocation(200, 200);
-                            selectUserTypeFrame.addWindowListener(new WindowAdapter() {
-                                public void windowClosing(WindowEvent we) {
-                                    System.exit(0);
-                                }
-                            });
-                            selectUserTypeFrame.setVisible(true);
+                    addPanelsToContent(new GridLayout(5, 1),panels,"Please select an option");
 
-                            JLabel label1 = new JLabel("Summary of account transactions: ");
-
-                            JPanel returnPanel = new JPanel();
-                            JButton returnButton = new JButton("Return");
-                            returnPanel.add(returnButton);
-
-                            JPanel textPanel = new JPanel();
-
-                            textPanel.setLayout(new BorderLayout());
-                            JTextArea textArea = new JTextArea(40, 20);
-                            textArea.setEditable(false);
-                            textPanel.add(label1, BorderLayout.NORTH);
-                            textPanel.add(textArea, BorderLayout.CENTER);
-                            textPanel.add(returnButton, BorderLayout.SOUTH);
-
-                            JScrollPane scrollPane = new JScrollPane(textArea);
-                            textPanel.add(scrollPane);
-
-                            for (int i = 0; i < acc.getTransactionList().size(); i++) {
-                                textArea.append(acc.getTransactionList().get(i).toString());
-
-                            }
-
-                            textPanel.add(textArea);
-                            content.removeAll();
-
-
-                            Container content = selectUserTypeFrame.getContentPane();
-                            content.setLayout(new GridLayout(1, 1));
-                            //	content.add(label1);
-                            content.add(textPanel);
-                            //content.add(returnPanel);
-
-                            returnButton.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent ae) {
-                                    selectUserTypeFrame.dispose();
-                                    customer(e);
-                                }
-                            });
-                        }
-                    });
 
                     lodgementButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
@@ -1483,6 +1434,32 @@ public class Menu extends JFrame {
         }
     }
 
+    private void addPanelsToContent(GridLayout layout,List<JPanel> panels, String title) {
+        JLabel label1 = new JLabel(title);
+        content = selectUserTypeFrame.getContentPane();
+        content.setLayout(layout);
+        content.add(label1);
+
+        for(JPanel p : panels){
+            content.add(p);
+        }
+
+
+    }
+
+    public JPanel createPanel(String title, ActionListener listener, Dimension size, int align){
+
+        JPanel panel = new JPanel(new FlowLayout(align));
+        JButton button = new JButton(title);
+        panel.add(button);
+        button.addActionListener(listener);
+        if(size!=null){
+            button.setPreferredSize(size);
+        }
+
+        return panel;
+    }
+
     public static boolean isNumeric(String str)  // a method that tests if a string is numeric
     {
         try {
@@ -1492,5 +1469,12 @@ public class Menu extends JFrame {
         }
         return true;
     }
+
+    //TODO DO THE SAME (CREATE NEW CLASS FOR EACH LISTENER(ALMOST))
+
+    //TODO MOVE ALL THE COMPUTATION AND CALCULATIONS TO ANOTHER CLASS(service class) for account
+    //don't forget to use singleton for this
+
+    //
 }
 
