@@ -40,9 +40,9 @@ public class Menu extends JFrame {
         Menu driver = new Menu();
 
         //populating customerList for testing purpose
-        ArrayList<CustomerAccount> ca = new ArrayList<>(Arrays.asList(new CustomerDepositAccount(1.5,"D1234", 2000.0, new ArrayList<AccountTransaction>())));
-        ca.add(new CustomerCurrentAccount(new ATMCard(1234, true),"C1234",1000.0, new ArrayList<AccountTransaction>()));
-        driver.customerList.add(new Customer ("1234","Joe","Bloggs","11061998","ID1234","1234",ca));
+        ArrayList<CustomerAccount> ca = new ArrayList<>(Arrays.asList(new CustomerDepositAccount(1.5, "D1234", 2000.0, new ArrayList<AccountTransaction>())));
+        ca.add(new CustomerCurrentAccount(new ATMCard(1234, true), "C1234", 1000.0, new ArrayList<AccountTransaction>()));
+        driver.customerList.add(new Customer("1234", "Joe", "Bloggs", "11061998", "ID1234", "1234", ca));
 
         driver.menuStart();
 
@@ -86,207 +86,216 @@ public class Menu extends JFrame {
         continueButton.addActionListener(ae -> {
             String user = userType.getSelection().getActionCommand();
 
-            //if user selects NEW CUSTOMER--------------------------------------------------------------------------------------
-            if (user.equals("New Customer")) {
-                selectUserTypeFrame.dispose();
-                createNewUserFrame.setSize(400, 300);
-                createNewUserFrame.setLocation(200, 200);
-                createNewUserFrame.addWindowListener(new WindowAdapter() {
-                    public void windowClosing(WindowEvent we) {
-                        System.exit(0);
-                    }
-                });
-                Container content1 = createNewUserFrame.getContentPane();
-                content1.setLayout(new BorderLayout());
 
-                firstNameLabel = new JLabel("First Name:", SwingConstants.RIGHT);
-                surnameLabel = new JLabel("Surname:", SwingConstants.RIGHT);
-                pPPSLabel = new JLabel("PPS Number:", SwingConstants.RIGHT);
-                dOBLabel = new JLabel("Date of birth", SwingConstants.RIGHT);
-                firstNameTextField = new JTextField(20);
-                surnameTextField = new JTextField(20);
-                pPSTextField = new JTextField(20);
-                dOBTextField = new JTextField(20);
-                JPanel panel = new JPanel(new GridLayout(6, 2));
-                panel.add(firstNameLabel);
-                panel.add(firstNameTextField);
-                panel.add(surnameLabel);
-                panel.add(surnameTextField);
-                panel.add(pPPSLabel);
-                panel.add(pPSTextField);
-                panel.add(dOBLabel);
-                panel.add(dOBTextField);
-
-                panel2 = new JPanel();
-                add = new JButton("Add");
-
-                add.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-
-                        String PPS = pPSTextField.getText();
-                        String firstName = firstNameTextField.getText();
-                        String surname = surnameTextField.getText();
-                        String DOB = dOBTextField.getText();
-                        String password = "";
-                        String CustomerID = "ID" + PPS;
-
-                        createNewUserFrame.dispose();
-
-                        boolean loop = true;
-                        while (loop) {
-                            password = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter 7 character Password:");
-
-                            if (password.length() != 7)//Making sure password is 7 characters
-                            {
-                                JOptionPane.showMessageDialog(null, null, "Password must be 7 characters long", JOptionPane.OK_OPTION);
-                            } else {
-                                loop = false;
-                            }
-                        }
-
-                        ArrayList<CustomerAccount> accounts = new ArrayList<CustomerAccount>();
-                        Customer customer = new Customer(PPS, surname, firstName, DOB, CustomerID, password, accounts);
-                        customerList.add(customer);
-
-                        JOptionPane.showMessageDialog(selectUserTypeFrame, "CustomerID = " + CustomerID + "\n Password = " + password, "Customer created.", JOptionPane.INFORMATION_MESSAGE);
-                        menuStart();
-                        //f.dispose();
-                    }
-                });
-                JButton cancel = new JButton("Cancel");
-                cancel.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        createNewUserFrame.dispose();
-                        menuStart();
-                    }
-                });
-
-                panel2.add(add);
-                panel2.add(cancel);
-
-                content1.add(panel, BorderLayout.CENTER);
-                content1.add(panel2, BorderLayout.SOUTH);
-
-                createNewUserFrame.setVisible(true);
-
+            //if user selects NEW CUSTOMER
+            switch (user) {
+                case "New Customer":
+                    newCustomerAction();
+                    break;
+                case "Customer":
+                    customerAction();
+                    break;
+                case "Administrator":
+                    administratorAction();
+                    break;
             }
 
+        });
+        selectUserTypeFrame.setVisible(true);
+    }
 
-            //------------------------------------------------------------------------------------------------------------------
+    private void administratorAction() {
+        boolean checkAdminUsername = true, checkPassword = true;
+        boolean openAdminMenu = false;
+        while (checkAdminUsername) {
+            Object adminUsername = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Administrator Username:");
 
-            //if user select ADMIN----------------------------------------------------------------------------------------------
-            if (user.equals("Administrator")) {
-                boolean checkAdminUsername = true, checkPassword = true;
-                boolean openAdminMenu = false;
-                while (checkAdminUsername) {
-                    Object adminUsername = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Administrator Username:");
-
-                    if (!adminUsername.equals("admin"))//search admin list for admin with matching admin username
-                    {
-                        int reply = JOptionPane.showConfirmDialog(null, null, "Incorrect Username. Try again?", JOptionPane.YES_NO_OPTION);
-                        if (reply == JOptionPane.YES_OPTION) {
-                            checkAdminUsername = true;
-                        } else if (reply == JOptionPane.NO_OPTION) {
-                            createNewUserFrame.dispose();
-                            checkAdminUsername = false;
-                            checkPassword = false;
-                            menuStart();
-                        }
-                    } else {
-                        checkAdminUsername = false;
-                    }
-                }
-
-                while (checkPassword) {
-                    Object adminPassword = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Administrator Password;");
-
-                    if (!adminPassword.equals("admin11"))//search admin list for admin with matching admin password
-                    {
-                        int reply = JOptionPane.showConfirmDialog(null, null, "Incorrect Password. Try again?", JOptionPane.YES_NO_OPTION);
-                        if (reply == JOptionPane.YES_OPTION) {
-
-                        } else if (reply == JOptionPane.NO_OPTION) {
-                            createNewUserFrame.dispose();
-                            checkPassword = false;
-                            menuStart();
-                        }
-                    } else {
-                        checkPassword = false;
-                        openAdminMenu = true;
-                    }
-                }
-
-                if (openAdminMenu) {
+            if (!adminUsername.equals("admin"))//search admin list for admin with matching admin username
+            {
+                int reply = JOptionPane.showConfirmDialog(null, null, "Incorrect Username. Try again?", JOptionPane.YES_NO_OPTION);
+                if (reply == JOptionPane.YES_OPTION) {
+                    checkAdminUsername = true;
+                } else if (reply == JOptionPane.NO_OPTION) {
                     createNewUserFrame.dispose();
                     checkAdminUsername = false;
-                    admin();
+                    checkPassword = false;
+                    menuStart();
+                }
+            } else {
+                checkAdminUsername = false;
+            }
+        }
+
+        while (checkPassword) {
+            Object adminPassword = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Administrator Password;");
+
+            if (!adminPassword.equals("admin11"))//search admin list for admin with matching admin password
+            {
+                int reply = JOptionPane.showConfirmDialog(null, null, "Incorrect Password. Try again?", JOptionPane.YES_NO_OPTION);
+                if (reply == JOptionPane.YES_OPTION) {
+
+                } else if (reply == JOptionPane.NO_OPTION) {
+                    createNewUserFrame.dispose();
+                    checkPassword = false;
+                    menuStart();
+                }
+            } else {
+                checkPassword = false;
+                openAdminMenu = true;
+            }
+        }
+
+        if (openAdminMenu) {
+            createNewUserFrame.dispose();
+            checkAdminUsername = false;
+            admin();
+        }
+
+    }
+
+    private void customerAction() {
+        boolean loop = true, loop2 = true;
+        boolean cont = false;
+        boolean found = false;
+        Customer customer = null;
+        while (loop) {
+            Object customerID = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Customer ID:");
+
+            for (Customer aCustomer : customerList) {
+
+                if (aCustomer.getCustomerID().equals(customerID))//search customer list for matching customer ID
+                {
+                    found = true;
+                    customer = aCustomer;
                 }
             }
-            //----------------------------------------------------------------------------------------------------------------
 
+            if (found == false) {
+                int reply = JOptionPane.showConfirmDialog(null, null, "User not found. Try again?", JOptionPane.YES_NO_OPTION);
+                if (reply == JOptionPane.YES_OPTION) {
+                    loop = true;
+                } else if (reply == JOptionPane.NO_OPTION) {
+                    selectUserTypeFrame.dispose();
+                    loop = false;
+                    loop2 = false;
+                    menuStart();
+                }
+            } else {
+                loop = false;
+            }
 
-            //if user selects CUSTOMER ----------------------------------------------------------------------------------------
-            if (user.equals("Customer")) {
-                boolean loop = true, loop2 = true;
-                boolean cont = false;
-                boolean found = false;
-                Customer customer = null;
+        }
+
+        while (loop2) {
+            Object customerPassword = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Customer Password;");
+
+            if (!customer.getPassword().equals(customerPassword))//check if customer password is correct
+            {
+                int reply = JOptionPane.showConfirmDialog(null, null, "Incorrect password. Try again?", JOptionPane.YES_NO_OPTION);
+                if (reply == JOptionPane.YES_OPTION) {
+
+                } else if (reply == JOptionPane.NO_OPTION) {
+                    selectUserTypeFrame.dispose();
+                    loop2 = false;
+                    menuStart();
+                }
+            } else {
+                loop2 = false;
+                cont = true;
+            }
+        }
+
+        if (cont) {
+            selectUserTypeFrame.dispose();
+            loop = false;
+            customer(customer);
+        }
+
+    }
+
+    private void newCustomerAction() {
+        selectUserTypeFrame.dispose();
+        createNewUserFrame.setSize(400, 300);
+        createNewUserFrame.setLocation(200, 200);
+        createNewUserFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                System.exit(0);
+            }
+        });
+        Container content1 = createNewUserFrame.getContentPane();
+        content1.setLayout(new BorderLayout());
+
+        firstNameLabel = new JLabel("First Name:", SwingConstants.RIGHT);
+        surnameLabel = new JLabel("Surname:", SwingConstants.RIGHT);
+        pPPSLabel = new JLabel("PPS Number:", SwingConstants.RIGHT);
+        dOBLabel = new JLabel("Date of birth", SwingConstants.RIGHT);
+        firstNameTextField = new JTextField(20);
+        surnameTextField = new JTextField(20);
+        pPSTextField = new JTextField(20);
+        dOBTextField = new JTextField(20);
+        JPanel panel = new JPanel(new GridLayout(6, 2));
+        panel.add(firstNameLabel);
+        panel.add(firstNameTextField);
+        panel.add(surnameLabel);
+        panel.add(surnameTextField);
+        panel.add(pPPSLabel);
+        panel.add(pPSTextField);
+        panel.add(dOBLabel);
+        panel.add(dOBTextField);
+
+        panel2 = new JPanel();
+        add = new JButton("Add");
+
+        add.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                String PPS = pPSTextField.getText();
+                String firstName = firstNameTextField.getText();
+                String surname = surnameTextField.getText();
+                String DOB = dOBTextField.getText();
+                String password = "";
+                String CustomerID = "ID" + PPS;
+
+                createNewUserFrame.dispose();
+
+                boolean loop = true;
                 while (loop) {
-                    Object customerID = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Customer ID:");
+                    password = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter 7 character Password:");
 
-                    for (Customer aCustomer : customerList) {
-
-                        if (aCustomer.getCustomerID().equals(customerID))//search customer list for matching customer ID
-                        {
-                            found = true;
-                            customer = aCustomer;
-                        }
-                    }
-
-                    if (found == false) {
-                        int reply = JOptionPane.showConfirmDialog(null, null, "User not found. Try again?", JOptionPane.YES_NO_OPTION);
-                        if (reply == JOptionPane.YES_OPTION) {
-                            loop = true;
-                        } else if (reply == JOptionPane.NO_OPTION) {
-                            selectUserTypeFrame.dispose();
-                            loop = false;
-                            loop2 = false;
-                            menuStart();
-                        }
+                    if (password.length() != 7)//Making sure password is 7 characters
+                    {
+                        JOptionPane.showMessageDialog(null, null, "Password must be 7 characters long", JOptionPane.OK_OPTION);
                     } else {
                         loop = false;
                     }
-
                 }
 
-                while (loop2) {
-                    Object customerPassword = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Customer Password;");
+                ArrayList<CustomerAccount> accounts = new ArrayList<CustomerAccount>();
+                Customer customer = new Customer(PPS, surname, firstName, DOB, CustomerID, password, accounts);
+                customerList.add(customer);
 
-                    if (!customer.getPassword().equals(customerPassword))//check if customer password is correct
-                    {
-                        int reply = JOptionPane.showConfirmDialog(null, null, "Incorrect password. Try again?", JOptionPane.YES_NO_OPTION);
-                        if (reply == JOptionPane.YES_OPTION) {
-
-                        } else if (reply == JOptionPane.NO_OPTION) {
-                            selectUserTypeFrame.dispose();
-                            loop2 = false;
-                            menuStart();
-                        }
-                    } else {
-                        loop2 = false;
-                        cont = true;
-                    }
-                }
-
-                if (cont) {
-                    selectUserTypeFrame.dispose();
-                    loop = false;
-                    customer(customer);
-                }
+                JOptionPane.showMessageDialog(selectUserTypeFrame, "CustomerID = " + CustomerID + "\n Password = " + password, "Customer created.", JOptionPane.INFORMATION_MESSAGE);
+                menuStart();
+                //f.dispose();
             }
-            //-----------------------------------------------------------------------------------------------------------------------
         });
-        selectUserTypeFrame.setVisible(true);
+        JButton cancel = new JButton("Cancel");
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                createNewUserFrame.dispose();
+                menuStart();
+            }
+        });
+
+        panel2.add(add);
+        panel2.add(cancel);
+
+        content1.add(panel, BorderLayout.CENTER);
+        content1.add(panel2, BorderLayout.SOUTH);
+
+        createNewUserFrame.setVisible(true);
+
+
     }
 
     private void addToPanel(JPanel userTypePanel, ButtonGroup userType, String buttonName, String action) {
