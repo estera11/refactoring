@@ -1,4 +1,8 @@
-package excercise;
+package excercise.listeners;
+
+import excercise.Customer;
+import excercise.CustomerAccount;
+import excercise.Menu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,15 +13,25 @@ import java.awt.event.WindowEvent;
 
 public class StatementListener implements ActionListener {
 
-    Menu parent;
+    private Menu parent;
+    private JFrame selectUserTypeFrame;
+    private CustomerAccount acc;
+    private Container content;
+    private Customer customer;
 
-    public StatementListener(Menu context) {
+
+    public StatementListener(Menu context, JFrame frame, CustomerAccount customerAccount, Container container, Customer c) {
         this.parent = context;
+        this.selectUserTypeFrame = frame;
+        this.acc = customerAccount;
+        this.content = container;
+        this.customer = c;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        parent.selectUserTypeFrame.dispose();
+
+        selectUserTypeFrame.dispose();
         selectUserTypeFrame = new JFrame("Customer Menu");
         selectUserTypeFrame.setSize(400, 600);
         selectUserTypeFrame.setLocation(200, 200);
@@ -57,18 +71,17 @@ public class StatementListener implements ActionListener {
 
         Container content = selectUserTypeFrame.getContentPane();
         content.setLayout(new GridLayout(1, 1));
-        //	content.add(label1);
         content.add(textPanel);
-        //content.add(returnPanel);
+
 
         // TODO create action listener class even for this one
         returnButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 selectUserTypeFrame.dispose();
-                customer(e);
+                parent.customer(customer);
             }
         });
     }
 
-    }
 }
+

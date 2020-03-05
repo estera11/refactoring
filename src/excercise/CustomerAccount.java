@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class CustomerAccount  {
    
-	String number;
-	double balance;
-	ArrayList<AccountTransaction> transactionList = new ArrayList<AccountTransaction>();
+	private String number;
+	private double balance;
+	private ArrayList transactionList = new ArrayList<AccountTransaction>();
 
 	//Blank Constructor
 	public CustomerAccount()
@@ -59,7 +59,5 @@ public class CustomerAccount  {
 	{
 		this.transactionList = transactionList;
 	}
-	
-	
-	
+
 }

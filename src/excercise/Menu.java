@@ -1,6 +1,10 @@
 package excercise;
 
 
+import excercise.listeners.LodgementListener;
+import excercise.listeners.StatementListener;
+import excercise.listeners.WithdrawListener;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -18,6 +22,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static excercise.Service.isNumeric;
+
 public class Menu extends JFrame {
 
     private ArrayList<Customer> customerList = new ArrayList<>();
@@ -30,7 +36,7 @@ public class Menu extends JFrame {
     private JLabel customerIDLabel, passwordLabel;
     private JTextField customerIDTextField, passwordTextField;
     private Container content;
-    Customer e;
+    Customer cust;
 
 
     public JPanel panel2;
@@ -932,10 +938,9 @@ public class Menu extends JFrame {
 
                     previous.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
+                            //change if statement so there is no empty body
 
-                            if (position < 1) {
-                                //don't do anything
-                            } else {
+                            if (position >= 1) {
                                 position = position - 1;
 
                                 firstNameTextField.setText(customerList.get(position).getFirstName());
@@ -950,10 +955,9 @@ public class Menu extends JFrame {
 
                     next.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
+                            //same here
 
-                            if (position == customerList.size() - 1) {
-                                //don't do anything
-                            } else {
+                            if (position != customerList.size() - 1) {
                                 position = position + 1;
 
                                 firstNameTextField.setText(customerList.get(position).getFirstName());
@@ -963,7 +967,6 @@ public class Menu extends JFrame {
                                 customerIDTextField.setText(customerList.get(position).getCustomerID());
                                 passwordTextField.setText(customerList.get(position).getPassword());
                             }
-
 
                         }
                     });
@@ -1019,7 +1022,7 @@ public class Menu extends JFrame {
                             }
                         }
 
-                        if (found == false) {
+                        if (!found) {
                             int reply = JOptionPane.showConfirmDialog(null, null, "User not found. Try again?", JOptionPane.YES_NO_OPTION);
                             if (reply == JOptionPane.YES_OPTION) {
                                 loop = true;
@@ -1040,7 +1043,7 @@ public class Menu extends JFrame {
                                 //create current account
                                 boolean valid = true;
                                 double balance = 0;
-                                String number = String.valueOf("C" + (customerList.indexOf(customer) + 1) * 10 + (customer.getAccounts().size() + 1));//this simple algorithm generates the account number
+                                String number = "C" + (customerList.indexOf(customer) + 1) * 10 + (customer.getAccounts().size() + 1);//this simple algorithm generates the account number
                                 ArrayList<AccountTransaction> transactionList = new ArrayList<AccountTransaction>();
                                 int randomPIN = (int) (Math.random() * 9000) + 1000;
                                 String pin = String.valueOf(randomPIN);
@@ -1060,7 +1063,7 @@ public class Menu extends JFrame {
                                 //create deposit account
 
                                 double balance = 0, interest = 0;
-                                String number = String.valueOf("D" + (customerList.indexOf(customer) + 1) * 10 + (customer.getAccounts().size() + 1));//this simple algorithm generates the account number
+                                String number = "D" + (customerList.indexOf(customer) + 1) * 10 + (customer.getAccounts().size() + 1);//this simple algorithm generates the account number
                                 ArrayList<AccountTransaction> transactionList = new ArrayList<AccountTransaction>();
 
                                 CustomerDepositAccount deposit = new CustomerDepositAccount(interest, number, balance, transactionList);
@@ -1099,7 +1102,7 @@ public class Menu extends JFrame {
                             }
                         }
 
-                        if (found == false) {
+                        if (!found) {
                             int reply = JOptionPane.showConfirmDialog(null, null, "User not found. Try again?", JOptionPane.YES_NO_OPTION);
                             if (reply == JOptionPane.YES_OPTION) {
                                 loop = true;
@@ -1141,7 +1144,7 @@ public class Menu extends JFrame {
                         }
                     }
 
-                    if (found == false) {
+                    if (!found) {
                         int reply = JOptionPane.showConfirmDialog(null, null, "User not found. Try again?", JOptionPane.YES_NO_OPTION);
                         if (reply == JOptionPane.YES_OPTION) {
                             loop = true;
@@ -1170,7 +1173,7 @@ public class Menu extends JFrame {
 
     public void customer(Customer e1) {
         selectUserTypeFrame = new JFrame("Customer Menu");
-        e = e1;
+        cust = e1;
         selectUserTypeFrame.setSize(400, 300);
         selectUserTypeFrame.setLocation(200, 200);
         selectUserTypeFrame.addWindowListener(new WindowAdapter() {
@@ -1181,7 +1184,7 @@ public class Menu extends JFrame {
         selectUserTypeFrame.setVisible(true);
         Menu context = this;
 
-        if (e.getAccounts().size() == 0) {
+        if (cust.getAccounts().size() == 0) {
             JOptionPane.showMessageDialog(selectUserTypeFrame, "This customer does not have any accounts yet. \n An admin must create an account for this customer \n for them to be able to use customer functionality. ", "Oops!", JOptionPane.INFORMATION_MESSAGE);
             selectUserTypeFrame.dispose();
             menuStart();
@@ -1199,14 +1202,14 @@ public class Menu extends JFrame {
             buttonPanel.add(continueButton);
 
             JComboBox<String> box = new JComboBox<String>();
-            for (int i = 0; i < e.getAccounts().size(); i++) {
-                box.addItem(e.getAccounts().get(i).getNumber());
+            for (int i = 0; i < cust.getAccounts().size(); i++) {
+                box.addItem(cust.getAccounts().get(i).getNumber());
             }
 
 
-            for (int i = 0; i < e.getAccounts().size(); i++) {
-                if (e.getAccounts().get(i).getNumber() == box.getSelectedItem()) {
-                    acc = e.getAccounts().get(i);
+            for (int i = 0; i < cust.getAccounts().size(); i++) {
+                if (cust.getAccounts().get(i).getNumber() == box.getSelectedItem()) {
+                    acc = cust.getAccounts().get(i);
                 }
             }
 
@@ -1240,241 +1243,57 @@ public class Menu extends JFrame {
                     });
                     selectUserTypeFrame.setVisible(true);
 
-//                    JPanel statementPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-//                    JButton statementButton = new JButton("Display Bank Statement");
-//                    statementButton.setPreferredSize(new Dimension(250, 20));
-//                    statementPanel.add(statementButton);
+                    // moved listeners into separate classes
+                    //created method to add panels to content
+                    //added method to create Panel
 
                     List<JPanel> panels = new ArrayList<>();
 
-                    panels.add(createPanel("Display Bank Statement",new StatementListener(context),new Dimension(250, 20), FlowLayout.LEFT));
+                    panels.add(createPanel("Display Bank Statement", new StatementListener(context, selectUserTypeFrame, acc, content, cust), new Dimension(250, 20), FlowLayout.LEFT));
 
-                    JPanel lodgementPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                    JButton lodgementButton = new JButton("Lodge money into account");
-                    lodgementPanel.add(lodgementButton);
-                    lodgementButton.setPreferredSize(new Dimension(250, 20));
+                    panels.add(createPanel("Lodge money into account", new LodgementListener(context, selectUserTypeFrame, acc, cust), new Dimension(250, 20), FlowLayout.LEFT));
 
-                    JPanel withdrawalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                    JButton withdrawButton = new JButton("Withdraw money from account");
-                    withdrawalPanel.add(withdrawButton);
-                    withdrawButton.setPreferredSize(new Dimension(250, 20));
+                    panels.add(createPanel("Withdraw money from account", new WithdrawListener(context, selectUserTypeFrame, acc, cust), new Dimension(250, 20), FlowLayout.LEFT));
 
-                    JPanel returnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-                    JButton returnButton = new JButton("Exit Customer Menu");
-                    returnPanel.add(returnButton);
+                    panels.add(createPanel("Exit Customer Menu", new ReturnListener(context, selectUserTypeFrame), null, FlowLayout.RIGHT));
 
-                   // TODO continue changing here
-                    content.add(lodgementPanel);
-                    content.add(withdrawalPanel);
-                    content.add(returnPanel);
+                    addPanelsToContent(new GridLayout(5, 1), panels, "Please select an option");
 
-                    addPanelsToContent(new GridLayout(5, 1),panels,"Please select an option");
-
-
-                    lodgementButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae) {
-                            boolean loop = true;
-                            boolean on = true;
-                            double balance = 0;
-
-                            if (acc instanceof CustomerCurrentAccount) {
-                                int count = 3;
-                                int checkPin = ((CustomerCurrentAccount) acc).getAtm().getPin();
-                                loop = true;
-
-                                while (loop) {
-                                    if (count == 0) {
-                                        JOptionPane.showMessageDialog(selectUserTypeFrame, "Pin entered incorrectly 3 times. ATM card locked.", "Pin", JOptionPane.INFORMATION_MESSAGE);
-                                        ((CustomerCurrentAccount) acc).getAtm().setValid(false);
-                                        customer(e);
-                                        loop = false;
-                                        on = false;
-                                    }
-
-                                    String Pin = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter 4 digit PIN;");
-                                    int i = Integer.parseInt(Pin);
-
-                                    if (on) {
-                                        if (checkPin == i) {
-                                            loop = false;
-                                            JOptionPane.showMessageDialog(selectUserTypeFrame, "Pin entry successful", "Pin", JOptionPane.INFORMATION_MESSAGE);
-
-                                        } else {
-                                            count--;
-                                            JOptionPane.showMessageDialog(selectUserTypeFrame, "Incorrect pin. " + count + " attempts remaining.", "Pin", JOptionPane.INFORMATION_MESSAGE);
-                                        }
-
-                                    }
-                                }
-
-
-                            }
-                            if (on == true) {
-                                String balanceTest = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter amount you wish to lodge:");//the isNumeric method tests to see if the string entered was numeric.
-                                if (isNumeric(balanceTest)) {
-
-                                    balance = Double.parseDouble(balanceTest);
-                                    loop = false;
-
-
-                                } else {
-                                    JOptionPane.showMessageDialog(selectUserTypeFrame, "You must enter a numerical value!", "Oops!", JOptionPane.INFORMATION_MESSAGE);
-                                }
-
-
-                                String euro = "\u20ac";
-                                acc.setBalance(acc.getBalance() + balance);
-                                // String date = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-                                Date date = new Date();
-                                String date2 = date.toString();
-                                String type = "Lodgement";
-                                double amount = balance;
-
-
-                                AccountTransaction transaction = new AccountTransaction(date2, type, amount);
-                                acc.getTransactionList().add(transaction);
-
-                                JOptionPane.showMessageDialog(selectUserTypeFrame, balance + euro + " added do you account!", "Lodgement", JOptionPane.INFORMATION_MESSAGE);
-                                JOptionPane.showMessageDialog(selectUserTypeFrame, "New balance = " + acc.getBalance() + euro, "Lodgement", JOptionPane.INFORMATION_MESSAGE);
-                            }
-
-                        }
-                    });
-
-                    withdrawButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae) {
-                            boolean loop = true;
-                            boolean on = true;
-                            double withdraw = 0;
-
-                            if (acc instanceof CustomerCurrentAccount) {
-                                int count = 3;
-                                int checkPin = ((CustomerCurrentAccount) acc).getAtm().getPin();
-                                loop = true;
-
-                                while (loop) {
-                                    if (count == 0) {
-                                        JOptionPane.showMessageDialog(selectUserTypeFrame, "Pin entered incorrectly 3 times. ATM card locked.", "Pin", JOptionPane.INFORMATION_MESSAGE);
-                                        ((CustomerCurrentAccount) acc).getAtm().setValid(false);
-                                        customer(e);
-                                        loop = false;
-                                        on = false;
-                                    }
-
-                                    String Pin = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter 4 digit PIN;");
-                                    int i = Integer.parseInt(Pin);
-
-                                    if (on) {
-                                        if (checkPin == i) {
-                                            loop = false;
-                                            JOptionPane.showMessageDialog(selectUserTypeFrame, "Pin entry successful", "Pin", JOptionPane.INFORMATION_MESSAGE);
-
-                                        } else {
-                                            count--;
-                                            JOptionPane.showMessageDialog(selectUserTypeFrame, "Incorrect pin. " + count + " attempts remaining.", "Pin", JOptionPane.INFORMATION_MESSAGE);
-
-                                        }
-
-                                    }
-                                }
-
-
-                            }
-                            if (on == true) {
-                                String balanceTest = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter amount you wish to withdraw (max 500):");//the isNumeric method tests to see if the string entered was numeric.
-                                if (isNumeric(balanceTest)) {
-
-                                    withdraw = Double.parseDouble(balanceTest);
-                                    loop = false;
-
-
-                                } else {
-                                    JOptionPane.showMessageDialog(selectUserTypeFrame, "You must enter a numerical value!", "Oops!", JOptionPane.INFORMATION_MESSAGE);
-                                }
-                                if (withdraw > 500) {
-                                    JOptionPane.showMessageDialog(selectUserTypeFrame, "500 is the maximum you can withdraw at a time.", "Oops!", JOptionPane.INFORMATION_MESSAGE);
-                                    withdraw = 0;
-                                }
-                                if (withdraw > acc.getBalance()) {
-                                    JOptionPane.showMessageDialog(selectUserTypeFrame, "Insufficient funds.", "Oops!", JOptionPane.INFORMATION_MESSAGE);
-                                    withdraw = 0;
-                                }
-
-                                String euro = "\u20ac";
-                                acc.setBalance(acc.getBalance() - withdraw);
-                                //recording transaction:
-                                //		String date = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-                                Date date = new Date();
-                                String date2 = date.toString();
-
-                                String type = "Withdraw";
-                                double amount = withdraw;
-
-
-                                AccountTransaction transaction = new AccountTransaction(date2, type, amount);
-                                acc.getTransactionList().add(transaction);
-
-
-                                JOptionPane.showMessageDialog(selectUserTypeFrame, withdraw + euro + " withdrawn.", "Withdraw", JOptionPane.INFORMATION_MESSAGE);
-                                JOptionPane.showMessageDialog(selectUserTypeFrame, "New balance = " + acc.getBalance() + euro, "Withdraw", JOptionPane.INFORMATION_MESSAGE);
-                            }
-
-
-                        }
-                    });
-
-                    returnButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae) {
-                            selectUserTypeFrame.dispose();
-                            menuStart();
-                        }
-                    });
                 }
             });
         }
     }
 
-    private void addPanelsToContent(GridLayout layout,List<JPanel> panels, String title) {
+    private void addPanelsToContent(GridLayout layout, List<JPanel> panels, String title) {
         JLabel label1 = new JLabel(title);
         content = selectUserTypeFrame.getContentPane();
         content.setLayout(layout);
         content.add(label1);
 
-        for(JPanel p : panels){
+        for (JPanel p : panels) {
             content.add(p);
         }
 
 
     }
 
-    public JPanel createPanel(String title, ActionListener listener, Dimension size, int align){
+    public JPanel createPanel(String title, ActionListener listener, Dimension size, int align) {
 
         JPanel panel = new JPanel(new FlowLayout(align));
         JButton button = new JButton(title);
         panel.add(button);
         button.addActionListener(listener);
-        if(size!=null){
+        if (size != null) {
             button.setPreferredSize(size);
         }
 
         return panel;
     }
 
-    public static boolean isNumeric(String str)  // a method that tests if a string is numeric
-    {
-        try {
-            double d = Double.parseDouble(str);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-        return true;
-    }
 
     //TODO DO THE SAME (CREATE NEW CLASS FOR EACH LISTENER(ALMOST))
 
     //TODO MOVE ALL THE COMPUTATION AND CALCULATIONS TO ANOTHER CLASS(service class) for account
     //don't forget to use singleton for this
-
-    //
 }
 
