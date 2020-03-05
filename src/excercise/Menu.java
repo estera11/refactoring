@@ -167,7 +167,7 @@ public class Menu extends JFrame {
         boolean loop = true, loop2 = true;
         boolean cont = false;
         boolean found = false;
-        Customer customer = null;
+        Customer existingCustomer = null;
         while (loop) {
             Object customerID = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Customer ID:");
 
@@ -176,7 +176,7 @@ public class Menu extends JFrame {
                 if (aCustomer.getCustomerID().equals(customerID))//search customer list for matching customer ID
                 {
                     found = true;
-                    customer = aCustomer;
+                    existingCustomer = aCustomer;
                 }
             }
 
@@ -199,7 +199,7 @@ public class Menu extends JFrame {
         while (loop2) {
             Object customerPassword = JOptionPane.showInputDialog(selectUserTypeFrame, "Enter Customer Password;");
 
-            if (!customer.getPassword().equals(customerPassword))//check if customer password is correct
+            if (!existingCustomer.getPassword().equals(customerPassword))//check if customer password is correct
             {
                 int reply = JOptionPane.showConfirmDialog(null, null, "Incorrect password. Try again?", JOptionPane.YES_NO_OPTION);
                 if (reply == JOptionPane.YES_OPTION) {
@@ -218,7 +218,7 @@ public class Menu extends JFrame {
         if (cont) {
             selectUserTypeFrame.dispose();
             loop = false;
-            customer(customer);
+            customer(existingCustomer);
         }
 
     }
@@ -887,12 +887,7 @@ public class Menu extends JFrame {
                     last = new JButton("Last");
                     cancel = new JButton("Cancel");
 
-                    firstNameTextField.setText(customerList.get(0).getFirstName());
-                    surnameTextField.setText(customerList.get(0).getSurname());
-                    pPSTextField.setText(customerList.get(0).getPPS());
-                    dOBTextField.setText(customerList.get(0).getDOB());
-                    customerIDTextField.setText(customerList.get(0).getCustomerID());
-                    passwordTextField.setText(customerList.get(0).getPassword());
+                    setCustomerDetails(0);
 
                     firstNameTextField.setEditable(false);
                     surnameTextField.setEditable(false);
@@ -927,12 +922,7 @@ public class Menu extends JFrame {
                     first.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
                             position = 0;
-                            firstNameTextField.setText(customerList.get(0).getFirstName());
-                            surnameTextField.setText(customerList.get(0).getSurname());
-                            pPSTextField.setText(customerList.get(0).getPPS());
-                            dOBTextField.setText(customerList.get(0).getDOB());
-                            customerIDTextField.setText(customerList.get(0).getCustomerID());
-                            passwordTextField.setText(customerList.get(0).getPassword());
+                            setCustomerDetails(0);
                         }
                     });
 
@@ -943,29 +933,18 @@ public class Menu extends JFrame {
                             if (position >= 1) {
                                 position = position - 1;
 
-                                firstNameTextField.setText(customerList.get(position).getFirstName());
-                                surnameTextField.setText(customerList.get(position).getSurname());
-                                pPSTextField.setText(customerList.get(position).getPPS());
-                                dOBTextField.setText(customerList.get(position).getDOB());
-                                customerIDTextField.setText(customerList.get(position).getCustomerID());
-                                passwordTextField.setText(customerList.get(position).getPassword());
+                                setCustomerDetails(position);
                             }
                         }
                     });
 
                     next.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
-                            //same here
 
                             if (position != customerList.size() - 1) {
                                 position = position + 1;
 
-                                firstNameTextField.setText(customerList.get(position).getFirstName());
-                                surnameTextField.setText(customerList.get(position).getSurname());
-                                pPSTextField.setText(customerList.get(position).getPPS());
-                                dOBTextField.setText(customerList.get(position).getDOB());
-                                customerIDTextField.setText(customerList.get(position).getCustomerID());
-                                passwordTextField.setText(customerList.get(position).getPassword());
+                                setCustomerDetails(position);
                             }
 
                         }
@@ -976,12 +955,7 @@ public class Menu extends JFrame {
 
                             position = customerList.size() - 1;
 
-                            firstNameTextField.setText(customerList.get(position).getFirstName());
-                            surnameTextField.setText(customerList.get(position).getSurname());
-                            pPSTextField.setText(customerList.get(position).getPPS());
-                            dOBTextField.setText(customerList.get(position).getDOB());
-                            customerIDTextField.setText(customerList.get(position).getCustomerID());
-                            passwordTextField.setText(customerList.get(position).getPassword());
+                            setCustomerDetails(position);
                         }
                     });
 
@@ -1171,9 +1145,18 @@ public class Menu extends JFrame {
         });
     }
 
-    public void customer(Customer e1) {
+    private void setCustomerDetails(int position) {
+        firstNameTextField.setText(customerList.get(position).getFirstName());
+        surnameTextField.setText(customerList.get(position).getSurname());
+        pPSTextField.setText(customerList.get(position).getPPS());
+        dOBTextField.setText(customerList.get(position).getDOB());
+        customerIDTextField.setText(customerList.get(position).getCustomerID());
+        passwordTextField.setText(customerList.get(position).getPassword());
+    }
+
+    public void customer(Customer existingCustomer) {
         selectUserTypeFrame = new JFrame("Customer Menu");
-        cust = e1;
+        cust = existingCustomer;
         selectUserTypeFrame.setSize(400, 300);
         selectUserTypeFrame.setLocation(200, 200);
         selectUserTypeFrame.addWindowListener(new WindowAdapter() {
@@ -1201,6 +1184,7 @@ public class Menu extends JFrame {
             JButton continueButton = new JButton("Continue");
             buttonPanel.add(continueButton);
 
+            //this is something that could be used where the strange comment is
             JComboBox<String> box = new JComboBox<String>();
             for (int i = 0; i < cust.getAccounts().size(); i++) {
                 box.addItem(cust.getAccounts().get(i).getNumber());
@@ -1243,9 +1227,6 @@ public class Menu extends JFrame {
                     });
                     selectUserTypeFrame.setVisible(true);
 
-                    // moved listeners into separate classes
-                    //created method to add panels to content
-                    //added method to create Panel
 
                     List<JPanel> panels = new ArrayList<>();
 
@@ -1273,11 +1254,9 @@ public class Menu extends JFrame {
         for (JPanel p : panels) {
             content.add(p);
         }
-
-
     }
 
-    public JPanel createPanel(String title, ActionListener listener, Dimension size, int align) {
+    private JPanel createPanel(String title, ActionListener listener, Dimension size, int align) {
 
         JPanel panel = new JPanel(new FlowLayout(align));
         JButton button = new JButton(title);
@@ -1286,7 +1265,6 @@ public class Menu extends JFrame {
         if (size != null) {
             button.setPreferredSize(size);
         }
-
         return panel;
     }
 
