@@ -2,7 +2,6 @@ package excercise.listeners;
 
 import excercise.Customer;
 import excercise.Menu;
-import excercise.ReturnListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -123,7 +122,7 @@ public class InterestListener implements ActionListener {
                                         interest = Double.parseDouble(interestString);
                                         loop = false;
 
-                                        parent.customerAccount.setBalance(parent.customerAccount.getBalance() + (parent.customerAccount.getBalance() * (interest / 100)));
+                                        parent.customerAccount.setBalance(getBalance(interest));
 
                                         JOptionPane.showMessageDialog(selectUserTypeFrame, interest + "% interest applied. \n new balance = " + parent.customerAccount.getBalance() + euro, "Success!", JOptionPane.INFORMATION_MESSAGE);
                                     } else {
@@ -145,5 +144,9 @@ public class InterestListener implements ActionListener {
             }
         }
 
+    }
+
+    private double getBalance(double interest) {
+        return parent.customerAccount.getBalance() + (parent.customerAccount.getBalance() * (interest / 100));
     }
 }

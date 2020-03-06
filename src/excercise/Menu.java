@@ -16,7 +16,6 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Menu extends JFrame {
@@ -44,13 +43,16 @@ public class Menu extends JFrame {
         Menu driver = new Menu();
 
         //populating customerList for testing purpose
-        ArrayList<CustomerAccount> ca = new ArrayList<>(Arrays.asList(new CustomerDepositAccount(1.5, "D1234", 2000.0, new ArrayList<AccountTransaction>())));
-        ca.add(new CustomerCurrentAccount(new ATMCard(1234, true), "C1234", 1000.0, new ArrayList<AccountTransaction>()));
-        driver.customerList.add(new Customer("1234", "Joe", "Bloggs", "11061998", "ID1234", "1234", ca));
+        ArrayList<CustomerAccount> ca = new ArrayList<>();
+        Customer c1 = new Customer("1234", "Joe", "Bloggs", "11061998", "ID1235", "1234", ca);
+        c1.getAccounts().add(new CustomerCurrentAccount(new ATMCard(1234, true), "C1234", 1000.0, new ArrayList<AccountTransaction>()));
+        c1.getAccounts().add((new CustomerDepositAccount(1.7, "D1234", 2000.0, new ArrayList<AccountTransaction>())));
+        driver.customerList.add(c1);
 
-        ArrayList<CustomerAccount> ca2 = new ArrayList<>(Arrays.asList(new CustomerDepositAccount(1.7, "D1235", 2000.0, new ArrayList<AccountTransaction>())));
-        ca.add(new CustomerCurrentAccount(new ATMCard(1235, true), "C1235", 1000.0, new ArrayList<AccountTransaction>()));
-        driver.customerList.add(new Customer("1235", "Mark", "Bloggs", "11061998", "ID1236", "1234", ca));
+
+        ArrayList<CustomerAccount> ca2 = new ArrayList<>();
+        ca2.add(new CustomerCurrentAccount(new ATMCard(1235, true), "C1235", 1000.0, new ArrayList<AccountTransaction>()));
+        driver.customerList.add(new Customer("1235", "Mark", "Bloggs", "11061998", "ID1236", "1234", ca2));
 
         driver.menuStart();
 
@@ -443,7 +445,6 @@ public class Menu extends JFrame {
 
                             if (position != customerList.size() - 1) {
                                 position = position + 1;
-
                                 setCustomerDetails(position);
                             }
 
@@ -452,9 +453,7 @@ public class Menu extends JFrame {
 
                     last.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
-
                             position = customerList.size() - 1;
-
                             setCustomerDetails(position);
                         }
                     });
@@ -476,7 +475,7 @@ public class Menu extends JFrame {
         panels2.add(createPanel("Delete Customer",  new DeleteCustomerListener(context, selectUserTypeFrame,customer), true, FlowLayout.LEFT));
         //panels2.add(createPanel("Delete Account", new DeleteAccountListener(context, selectUserTypeFrame,customer), true, FlowLayout.LEFT));
         panels2.add(createPanel("Exit Admin Menu", new ReturnListener(context,selectUserTypeFrame), false, FlowLayout.RIGHT));
-        
+
         addPanelsToContent(new GridLayout(9, 1), panels2,"Please select an option");
 
 
@@ -506,6 +505,7 @@ public class Menu extends JFrame {
         selectUserTypeFrame.setVisible(true);
 
 
+
         if (cust.getAccounts().size() == 0) {
             JOptionPane.showMessageDialog(selectUserTypeFrame, "This customer does not have any accounts yet. \n An admin must create an account for this customer \n for them to be able to use customer functionality. ", "Oops!", JOptionPane.INFORMATION_MESSAGE);
             selectUserTypeFrame.dispose();
@@ -523,21 +523,9 @@ public class Menu extends JFrame {
             JButton continueButton = new JButton("Continue");
             buttonPanel.add(continueButton);
 
-            //this is something that could be used where the strange comment is
-            JComboBox<String> box = new JComboBox<String>();
-            for (int i = 0; i < cust.getAccounts().size(); i++) {
-                box.addItem(cust.getAccounts().get(i).getNumber());
-            }
+            //JComboBox<String> box =
 
-
-            for (int i = 0; i < cust.getAccounts().size(); i++) {
-                if (cust.getAccounts().get(i).getNumber() == box.getSelectedItem()) {
-                    customerAccount = cust.getAccounts().get(i);
-                }
-            }
-
-
-            boxPanel.add(box);
+            boxPanel.add(getStringJComboBox());
             content = selectUserTypeFrame.getContentPane();
             content.setLayout(new GridLayout(3, 1));
             content.add(labelPanel);
@@ -569,11 +557,11 @@ public class Menu extends JFrame {
 
                     List<JPanel> panels = new ArrayList<>();
 
-                    panels.add(createPanel("Display Bank Statement", new StatementListener(context, selectUserTypeFrame, customerAccount, content, cust), true, FlowLayout.LEFT));
+                    panels.add(createPanel("Display Bank Statement", new StatementListener(context, selectUserTypeFrame,  customerAccount, content, cust), true, FlowLayout.LEFT));
 
-                    panels.add(createPanel("Lodge money into account", new LodgementListener(context, selectUserTypeFrame, customerAccount, cust), true, FlowLayout.LEFT));
+                    panels.add(createPanel("Lodge money into account", new LodgementListener(context, selectUserTypeFrame, cust), true, FlowLayout.LEFT));
 
-                    panels.add(createPanel("Withdraw money from account", new WithdrawListener(context, selectUserTypeFrame, customerAccount, cust), false, FlowLayout.LEFT));
+                    panels.add(createPanel("Withdraw money from account", new WithdrawListener(context, selectUserTypeFrame, customerAccount, cust), true, FlowLayout.LEFT));
 
                     panels.add(createPanel("Exit Customer Menu", new ReturnListener(context, selectUserTypeFrame), false, FlowLayout.RIGHT));
 
@@ -582,6 +570,19 @@ public class Menu extends JFrame {
                 }
             });
         }
+    }
+
+    private JComboBox<String> getStringJComboBox() {
+        JComboBox<String> box = new JComboBox<String>();
+        for (int i = 0; i < cust.getAccounts().size(); i++) {
+            box.addItem(cust.getAccounts().get(i).getNumber());
+        }
+        for (int i = 0; i < cust.getAccounts().size(); i++) {
+            if (cust.getAccounts().get(i).getNumber() == box.getSelectedItem()) {
+                customerAccount = cust.getAccounts().get(i);
+            }
+        }
+        return box;
     }
 
     private void addPanelsToContent(GridLayout layout, List<JPanel> panels, String title) {

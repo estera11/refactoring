@@ -11,15 +11,14 @@ import static excercise.Service.isNumeric;
 
 public class LodgementListener implements ActionListener {
 
-    Menu parent;
-    JFrame selectUserTypeFrame;
-    CustomerAccount customerAccount;
-    Customer customer;
+    private Menu parent;
+    private JFrame selectUserTypeFrame;
+    private Customer customer;
 
-    public LodgementListener(Menu context, JFrame frame, CustomerAccount acc, Customer cust){
+
+    public LodgementListener(Menu context, JFrame frame,  Customer cust) {
         this.parent = context;
         this.selectUserTypeFrame = frame;
-        this.customerAccount = acc;
         this.customer = cust;
     }
 
@@ -30,15 +29,15 @@ public class LodgementListener implements ActionListener {
         boolean on = true;
         double balance = 0;
 
-        if (customerAccount instanceof CustomerCurrentAccount) {
+        if (parent.customerAccount instanceof CustomerCurrentAccount) {
             int count = 3;
-            int checkPin = ((CustomerCurrentAccount) customerAccount).getAtm().getPin();
+            int checkPin = ((CustomerCurrentAccount) parent.customerAccount).getAtm().getPin();
             loop = true;
 
             while (loop) {
                 if (count == 0) {
                     JOptionPane.showMessageDialog(selectUserTypeFrame, "Pin entered incorrectly 3 times. ATM card locked.", "Pin", JOptionPane.INFORMATION_MESSAGE);
-                    ((CustomerCurrentAccount) customerAccount).getAtm().setValid(false);
+                    ((CustomerCurrentAccount) parent.customerAccount).getAtm().setValid(false);
                     parent.customer(customer);
                     loop = false;
                     on = false;
@@ -76,7 +75,7 @@ public class LodgementListener implements ActionListener {
 
 
             String euro = "\u20ac";
-            customerAccount.setBalance(customerAccount.getBalance() + balance);
+            parent.customerAccount.setBalance(parent.customerAccount.getBalance() + balance);
             // String date = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
             Date date = new Date();
             String date2 = date.toString();
@@ -85,11 +84,12 @@ public class LodgementListener implements ActionListener {
 
 
             AccountTransaction transaction = new AccountTransaction(date2, type, amount);
-            customerAccount.getTransactionList().add(transaction);
+            parent.customerAccount.getTransactionList().add(transaction);
 
             JOptionPane.showMessageDialog(selectUserTypeFrame, balance + euro + " added do you account!", "Lodgement", JOptionPane.INFORMATION_MESSAGE);
-            JOptionPane.showMessageDialog(selectUserTypeFrame, "New balance = " + customerAccount.getBalance() + euro, "Lodgement", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(selectUserTypeFrame, "New balance = " + parent.customerAccount.getBalance() + euro, "Lodgement", JOptionPane.INFORMATION_MESSAGE);
         }
 
     }
+
 }

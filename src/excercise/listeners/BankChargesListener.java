@@ -5,7 +5,6 @@ import excercise.Customer;
 import excercise.CustomerCurrentAccount;
 import excercise.CustomerDepositAccount;
 import excercise.Menu;
-import excercise.ReturnListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +18,7 @@ public class BankChargesListener implements ActionListener {
     private Menu parent;
     private Customer customer;
     private JFrame selectUserTypeFrame;
+    private JPanel boxPanel = new JPanel();
 
 
     public BankChargesListener(Menu context, Customer customer, JFrame frame) {
@@ -53,13 +53,15 @@ public class BankChargesListener implements ActionListener {
 
                 if (!found) {
                     int reply = JOptionPane.showConfirmDialog(null, null, "User not found. Try again?", JOptionPane.YES_NO_OPTION);
-                    if (reply == JOptionPane.YES_OPTION) {
-                        loop = true;
-                    } else if (reply == JOptionPane.NO_OPTION) {
-                        selectUserTypeFrame.dispose();
-                        loop = false;
-
-                        parent.admin();
+                    switch (reply) {
+                        case JOptionPane.YES_OPTION:
+                            loop = true;
+                            break;
+                        case JOptionPane.NO_OPTION:
+                            selectUserTypeFrame.dispose();
+                            loop = false;
+                            parent.admin();
+                            break;
                     }
                 } else {
                     selectUserTypeFrame.dispose();
@@ -74,17 +76,8 @@ public class BankChargesListener implements ActionListener {
                     selectUserTypeFrame.setVisible(true);
 
 
-                    JComboBox<String> box = new JComboBox<String>();
-                    for (int i = 0; i < customer.getAccounts().size(); i++) {
+                    JComboBox<String> box = getStringJComboBox();
 
-
-                        box.addItem(customer.getAccounts().get(i).getNumber());
-                    }
-
-
-                    box.getSelectedItem();
-
-                    JPanel boxPanel = new JPanel();
                     boxPanel.add(box);
 
                     JPanel buttonPanel = new JPanel();
@@ -115,21 +108,12 @@ public class BankChargesListener implements ActionListener {
                             public void actionPerformed(ActionEvent ae) {
                                 String euro = "\u20ac";
 
-
                                 if (parent.customerAccount instanceof CustomerDepositAccount) {
-
-
-                                    JOptionPane.showMessageDialog(selectUserTypeFrame, "25" + euro + " deposit account fee aplied.", "", JOptionPane.INFORMATION_MESSAGE);
-                                    parent.customerAccount.setBalance(parent.customerAccount.getBalance() - 25);
-                                    JOptionPane.showMessageDialog(selectUserTypeFrame, "New balance = " + parent.customerAccount.getBalance(), "Success!", JOptionPane.INFORMATION_MESSAGE);
+                                    applyBankCharges(euro, "25", " deposit account fee applied.");
                                 }
 
                                 if (parent.customerAccount instanceof CustomerCurrentAccount) {
-
-
-                                    JOptionPane.showMessageDialog(selectUserTypeFrame, "15" + euro + " current account fee aplied.", "", JOptionPane.INFORMATION_MESSAGE);
-                                    parent.customerAccount.setBalance(parent.customerAccount.getBalance() - 25);
-                                    JOptionPane.showMessageDialog(selectUserTypeFrame, "New balance = " + parent.customerAccount.getBalance(), "Success!", JOptionPane.INFORMATION_MESSAGE);
+                                    applyBankCharges(euro, "15", " current account fee applied.");
                                 }
 
 
@@ -147,5 +131,20 @@ public class BankChargesListener implements ActionListener {
         }
 
 
+    }
+
+    private JComboBox<String> getStringJComboBox() {
+        JComboBox<String> box = new JComboBox<String>();
+        for (int i = 0; i < customer.getAccounts().size(); i++) {
+            box.addItem(customer.getAccounts().get(i).getNumber());
+        }
+        box.getSelectedItem();
+        return box;
+    }
+
+    private void applyBankCharges(String euro, String s, String s2) {
+        JOptionPane.showMessageDialog(selectUserTypeFrame, s + euro + s2, "", JOptionPane.INFORMATION_MESSAGE);
+        parent.customerAccount.setBalance(parent.customerAccount.getBalance() - 25);
+        JOptionPane.showMessageDialog(selectUserTypeFrame, "New balance = " + parent.customerAccount.getBalance(), "Success!", JOptionPane.INFORMATION_MESSAGE);
     }
 }

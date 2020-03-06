@@ -1,4 +1,6 @@
-package excercise;
+package excercise.listeners;
+
+import excercise.Menu;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

@@ -73,14 +73,8 @@ public class StatementListener implements ActionListener {
         content.setLayout(new GridLayout(1, 1));
         content.add(textPanel);
 
-
-        // TODO create action listener class even for this one
-        returnButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
-                selectUserTypeFrame.dispose();
-                parent.customer(customer);
-            }
-        });
+        ReturnListener returnListener = new ReturnListener(parent, selectUserTypeFrame);
+        returnButton.addActionListener(returnListener);
     }
 
 }

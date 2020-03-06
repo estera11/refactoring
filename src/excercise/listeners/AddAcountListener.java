@@ -43,13 +43,16 @@ public class AddAcountListener implements ActionListener {
 
                 if (!found) {
                     int reply = JOptionPane.showConfirmDialog(null, null, "User not found. Try again?", JOptionPane.YES_NO_OPTION);
-                    if (reply == JOptionPane.YES_OPTION) {
-                        loop = true;
-                    } else if (reply == JOptionPane.NO_OPTION) {
-                        selectUserTypeFrame.dispose();
-                        loop = false;
+                    switch (reply) {
+                        case JOptionPane.YES_OPTION:
+                            loop = true;
+                            break;
+                        case JOptionPane.NO_OPTION:
+                            selectUserTypeFrame.dispose();
+                            loop = false;
 
-                        parent.admin();
+                            parent.admin();
+                            break;
                     }
                 } else {
                     loop = false;
@@ -74,8 +77,8 @@ public class AddAcountListener implements ActionListener {
                         parent.customer.getAccounts().add(current);
                         JOptionPane.showMessageDialog(selectUserTypeFrame, "Account number = " + number + "\n PIN = " + pin, "Account created.", JOptionPane.INFORMATION_MESSAGE);
 
-                        selectUserTypeFrame.dispose();
-                        parent.admin();
+                        closeFrame();
+
                     }
 
                     if (account.equals("Deposit Account")) {
@@ -89,14 +92,18 @@ public class AddAcountListener implements ActionListener {
 
                         parent.customer.getAccounts().add(deposit);
                         JOptionPane.showMessageDialog(selectUserTypeFrame, "Account number = " + number, "Account created.", JOptionPane.INFORMATION_MESSAGE);
-
-                        selectUserTypeFrame.dispose();
-                        parent.admin();
+                        closeFrame();
                     }
+
+
 
                 }
             }
         }
 
+    }
+    private void closeFrame(){
+        selectUserTypeFrame.dispose();
+        parent.admin();
     }
 }

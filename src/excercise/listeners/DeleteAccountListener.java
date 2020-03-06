@@ -4,6 +4,7 @@ import excercise.Customer;
 import excercise.Menu;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -21,10 +22,8 @@ public class DeleteAccountListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        boolean found = true, loop = true;
-
-
-        {
+        boolean found = false, loop = true;
+        while (loop) {
             Object customerID = JOptionPane.showInputDialog(selectUserTypeFrame, "Customer ID of Customer from which you wish to delete an account");
 
             for (Customer aCustomer : parent.customerList) {
@@ -32,26 +31,26 @@ public class DeleteAccountListener implements ActionListener {
                 if (aCustomer.getCustomerID().equals(customerID)) {
                     found = true;
                     customer = aCustomer;
-                    loop = false;
+
                 }
             }
 
             if (!found) {
                 int reply = JOptionPane.showConfirmDialog(null, null, "User not found. Try again?", JOptionPane.YES_NO_OPTION);
-                if (reply == JOptionPane.YES_OPTION) {
-                    loop = true;
-                } else if (reply == JOptionPane.NO_OPTION) {
-                    selectUserTypeFrame.dispose();
-                    loop = false;
-
-                    parent.admin();
+                switch (reply) {
+                    case JOptionPane.YES_OPTION:
+                        loop = true;
+                        break;
+                    case JOptionPane.NO_OPTION:
+                        selectUserTypeFrame.dispose();
+                        loop = false;
+                        parent.admin();
+                        break;
                 }
-            } else {
-                //Here I would make the user select a an account to delete from a combo box. If the account had a balance of 0 then it would be deleted. (I do not have time to do this)
             }
-
 
         }
 
     }
 }
+

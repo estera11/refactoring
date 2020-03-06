@@ -60,10 +60,7 @@ public class DisplayAccountsSummaryListener implements ActionListener {
             for (int b = 0; b < parent.customerList.get(a).getAccounts().size(); b++) {
                 parent.customerAccount = parent.customerList.get(a).getAccounts().get(b);
                 for (int c = 0; c < parent.customerList.get(a).getAccounts().get(b).getTransactionList().size(); c++) {
-
                     textArea.append(parent.customerAccount.getTransactionList().get(c).toString());
-                    //Int total = acc.getTransactionList().get(c).getAmount(); //I was going to use this to keep a running total but I couldnt get it  working.
-
                 }
             }
         }
@@ -75,9 +72,7 @@ public class DisplayAccountsSummaryListener implements ActionListener {
 
         Container content = selectUserTypeFrame.getContentPane();
         content.setLayout(new GridLayout(1, 1));
-        //	content.add(label1);
         content.add(textPanel);
-        //content.add(returnPanel);
 
         returnButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
