@@ -14,8 +14,8 @@ import static excercise.Service.isNumeric;
 
 public class InterestListener implements ActionListener {
 
-    private Menu parent;
-    private JFrame selectUserTypeFrame;
+    public Menu parent;
+    public JFrame selectUserTypeFrame;
 
     public InterestListener(Menu context, JFrame frame) {
         this.parent = context;
@@ -149,4 +149,5 @@ public class InterestListener implements ActionListener {
     private double getBalance(double interest) {
         return parent.customerAccount.getBalance() + (parent.customerAccount.getBalance() * (interest / 100));
     }
+
 }

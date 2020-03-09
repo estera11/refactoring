@@ -1,10 +1,10 @@
 package excercise;
 
 public class Service {
-    private static Service instance;
+
+    private Menu parent;
 
      private Service (){}
-
 
     public static boolean isNumeric(String str)  // a method that tests if a string is numeric
     {

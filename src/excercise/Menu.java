@@ -25,13 +25,8 @@ public class Menu extends JFrame {
     public Customer customer = null;
     public CustomerAccount customerAccount = new CustomerAccount();
     private JFrame selectUserTypeFrame, createNewUserFrame;
-    public JLabel firstNameLabel;
-    public JLabel surnameLabel;
-    public JLabel pPPSLabel;
-    public JLabel dOBLabel;
+    public JLabel firstNameLabel, surnameLabel, pPPSLabel, dOBLabel, customerIDLabel, passwordLabel;
     public JTextField firstNameTextField, surnameTextField, pPSTextField, dOBTextField;
-    public JLabel customerIDLabel;
-    public JLabel passwordLabel;
     public JTextField customerIDTextField, passwordTextField;
     private Container content;
     private Customer cust;
@@ -43,16 +38,16 @@ public class Menu extends JFrame {
         Menu driver = new Menu();
 
         //populating customerList for testing purpose
-        ArrayList<CustomerAccount> ca = new ArrayList<>();
-        Customer c1 = new Customer("1234", "Joe", "Bloggs", "11061998", "ID1235", "1234", ca);
-        c1.getAccounts().add(new CustomerCurrentAccount(new ATMCard(1234, true), "C1234", 1000.0, new ArrayList<AccountTransaction>()));
-        c1.getAccounts().add((new CustomerDepositAccount(1.7, "D1234", 2000.0, new ArrayList<AccountTransaction>())));
-        driver.customerList.add(c1);
-
-
-        ArrayList<CustomerAccount> ca2 = new ArrayList<>();
-        ca2.add(new CustomerCurrentAccount(new ATMCard(1235, true), "C1235", 1000.0, new ArrayList<AccountTransaction>()));
-        driver.customerList.add(new Customer("1235", "Mark", "Bloggs", "11061998", "ID1236", "1234", ca2));
+//        ArrayList<CustomerAccount> ca = new ArrayList<>();
+//        Customer c1 = new Customer("1234", "Joe", "Bloggs", "11061998", "ID1235", "1234", ca);
+//        c1.getAccounts().add(new CustomerCurrentAccount(new ATMCard(1234, true), "C1234", 1000.0, new ArrayList<AccountTransaction>()));
+//        c1.getAccounts().add((new CustomerDepositAccount(1.7, "D1234", 2000.0, new ArrayList<AccountTransaction>())));
+//        driver.customerList.add(c1);
+//
+//
+//        ArrayList<CustomerAccount> ca2 = new ArrayList<>();
+//        ca2.add(new CustomerCurrentAccount(new ATMCard(1235, true), "C1235", 1000.0, new ArrayList<AccountTransaction>()));
+//        driver.customerList.add(new Customer("1235", "Mark", "Bloggs", "11061998", "ID1236", "1234", ca2));
 
         driver.menuStart();
 
@@ -76,7 +71,6 @@ public class Menu extends JFrame {
 
         JPanel userTypePanel = new JPanel();
 
-        JRadioButton radioButton;
 
         addToPanel(userTypePanel, userType, "Existing Customer", "Customer");
 
@@ -97,8 +91,6 @@ public class Menu extends JFrame {
         continueButton.addActionListener(ae -> {
             String user = userType.getSelection().getActionCommand();
 
-
-            //if user selects NEW CUSTOMER
             switch (user) {
                 case "New Customer":
                     newCustomerAction();
@@ -241,8 +233,9 @@ public class Menu extends JFrame {
                 System.exit(0);
             }
         });
-        Container content1 = createNewUserFrame.getContentPane();
-        content1.setLayout(new BorderLayout());
+        Container newUserFrameContent = createNewUserFrame.getContentPane();
+
+        newUserFrameContent.setLayout(new BorderLayout());
 
         firstNameLabel = new JLabel("First Name:", SwingConstants.RIGHT);
         surnameLabel = new JLabel("Surname:", SwingConstants.RIGHT);
@@ -308,8 +301,8 @@ public class Menu extends JFrame {
         panelAddCustomer.add(add);
         panelAddCustomer.add(cancel);
 
-        content1.add(panel, BorderLayout.CENTER);
-        content1.add(panelAddCustomer, BorderLayout.SOUTH);
+        newUserFrameContent.add(panel, BorderLayout.CENTER);
+        newUserFrameContent.add(panelAddCustomer, BorderLayout.SOUTH);
 
         createNewUserFrame.setVisible(true);
 
@@ -430,11 +423,8 @@ public class Menu extends JFrame {
                     previous.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae) {
 
-                            //changed if statement so there is no empty body
-
                             if (position >= 1) {
                                 position = position - 1;
-
                                 setCustomerDetails(position);
                             }
                         }
@@ -523,7 +513,6 @@ public class Menu extends JFrame {
             JButton continueButton = new JButton("Continue");
             buttonPanel.add(continueButton);
 
-            //JComboBox<String> box =
 
             boxPanel.add(getStringJComboBox());
             content = selectUserTypeFrame.getContentPane();
